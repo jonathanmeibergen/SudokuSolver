@@ -11,6 +11,9 @@ namespace SudokuSolver.Logics
 {
     public class Solver
     {
+        int soleCandidateNumber;
+        int uniqueCandidateNumber;
+
         public int[] getBlockNumbers(double rowNumber, double columnNumber, int[][] sudoku)
         {
             double blockStartRow = rowNumber - (rowNumber%3);
@@ -58,11 +61,34 @@ namespace SudokuSolver.Logics
             return columnNumbers;
         }
 
+        //public bool uniqueCandidate()
+        //{
+
+        //}
+
         public bool soleCandidate(int rowNumber,int columnNumber, int[][] sudoku)
         {
             int[] blockNumbers = getBlockNumbers(rowNumber, columnNumber, sudoku);
             int[] rowNumbers = getRowNumbers(rowNumber, sudoku);
             int[] columnNumbers = getColumnNumbers(columnNumber, sudoku);
+
+            int[] numberArray = new int[10];
+            for (int i = 1; i < 10; i++)
+            {
+                // geruik includes hiervoor en haal de cijfers uit de array (naar 0)
+                if (blockNumbers[i] == numberArray[blockNumbers[i]])
+                {
+                    numberArray[blockNumbers[i]] = blockNumbers[i];
+                }
+                if (rowNumbers[i] == numberArray[rowNumbers[i]])
+                {
+                    numberArray[rowNumbers[i]] = rowNumbers[i];
+                }
+                if (columnNumbers[i] == numberArray[columnNumbers[i]])
+                {
+                    numberArray[columnNumbers[i]] = columnNumbers[i];
+                }
+            }
             return true;
         }
 
