@@ -73,18 +73,18 @@ namespace SudokuSolver.Logics
             int[] columnNumbers = getColumnNumbers(columnNumber, sudoku);
 
             int[] numberArray = new int[10];
-            for (int i = 1; i < 10; i++)
+            for (int i = 1; i < 9; i++)
             {
                 // geruik includes hiervoor en haal de cijfers uit de array (naar 0)
-                if (blockNumbers[i] == numberArray[blockNumbers[i]])
+                if (blockNumbers[i] > 0)
                 {
                     numberArray[blockNumbers[i]] = blockNumbers[i];
                 }
-                if (rowNumbers[i] == numberArray[rowNumbers[i]])
+                if (rowNumbers[i] >0)
                 {
                     numberArray[rowNumbers[i]] = rowNumbers[i];
                 }
-                if (columnNumbers[i] == numberArray[columnNumbers[i]])
+                if (columnNumbers[i] >0)
                 {
                     numberArray[columnNumbers[i]] = columnNumbers[i];
                 }
