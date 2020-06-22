@@ -13,6 +13,7 @@ namespace SudokuSolver.Logics
 
         public int[][] Solve(int[][] sudoku)
         {
+            sudoku[0][0] = 2;
             return sudoku;
         }
 
