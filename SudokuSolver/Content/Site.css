@@ -1,0 +1,356 @@
+﻿:root {
+    --itvitae-blue: #01A7BD;
+    --readonly-background: white;
+    --readonly-color: black;
+    --cell-background: darkgreen;
+    --cell-color: white;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+h2 {
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    font-size: 36px;
+}
+
+#solveLabel {
+    background-color: var(--itvitae-blue);
+    color: white;
+}
+
+button {
+    width: 150px;
+    height: 75px;
+    margin-bottom: 15px;
+    background-color: var(--itvitae-blue);
+    border-radius: 30px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    outline: none;
+}
+
+.container {
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin-bottom: 30px;
+}
+
+button:hover {
+    color: gold;
+}
+
+button:active {
+    border-style: none !important;
+}
+
+
+
+footer {
+    position: relative;
+    bottom: 30px;
+    text-align: center;
+    font-size: 24px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 200px;
+}
+
+#error {
+    color: red;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+form {
+    margin-top: 30px;
+    height: 100%;
+}
+
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    padding: 0px;
+    background-color: var(--cell-background);
+    color: var(--cell-color);
+}
+
+input[type='number'] {
+    -moz-appearance: textfield;
+    background-color: var(--cell-background);
+    color: var(--cell-color);
+}
+
+input[type=number]:read-only {
+    background-color: var(--readonly-background);
+    color: var(--readonly-color);
+}
+
+input[type="number"]:-moz-read-only {
+    background-color: var(--readonly-background);
+    color: var(--readonly-color);
+}
+
+.dropdownlistcontainer {
+    align-content: center;
+    align-items: center;
+}
+
+select {
+    /*Text styles*/
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    direction: rtl;
+    color: white;
+    /*Others*/
+
+    width: 150px;
+    height: 75px;
+    border-radius: 35px;
+    /*padding-right: 39px;*/
+    background-color: var(--itvitae-blue);
+    border-left-color: gray;
+    border-top-color: gray;
+    border-right-color: black;
+    border-bottom-color: black;
+    border-style: solid;
+    border-width: 2px;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+    /*¿que?*/
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+}
+    select:focus {
+        border: none;
+        border-radius: 0px;
+        text-align: center;
+    }
+
+    /*IE support?*/
+    select::-ms-expand{
+        display: none;
+    }
+
+.cell {
+    height: 50px;
+    width: 50px;
+    text-align: center;
+    font-size: x-large;
+    border: 1px;
+    border-collapse: collapse;
+}
+
+
+.gameContainer {
+    width: 100%;
+    height: 100%;
+    min-width: 600px;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    align-content: stretch;
+    vertical-align: central;
+}
+
+.pageHeader {
+    width: 100%;
+    height: 100px;
+    margin: 0px;
+    padding: 0px;
+    background-color: var(--itvitae-blue);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sudokuSidebar {
+    width: 20%;
+    margin-right: 10px;
+    min-width: 200px;
+    float: left;
+    height: 600px;
+    background-color: lightgray;
+}
+
+.sudokuMainContainer {
+    width: calc(75%-1px);
+    min-width: 450px;
+    display: flex;
+    float: left;
+    margin-top: calc(10%);
+    justify-content: center;
+    align-self: center;
+    align-items: center;
+}
+
+.buttonContainer {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 30px;
+}
+
+    .buttonContainer button {
+        border-left-color: gray;
+        border-top-color: gray;
+        border-right-color: black;
+        border-bottom-color: black;
+        border-style: solid;
+        border-width: 2px;
+    }
+
+table {
+    border: 5px black solid;
+    border-spacing: 0px;
+    border-collapse: collapse;
+}
+
+.slidecontainer {
+    width: 150px;
+    height: 75px;
+    font-weight: bold;
+    color: white;
+    border-left-color: gray;
+    border-top-color: gray;
+    border-right-color: black;
+    border-bottom-color: black;
+    border-style: solid;
+    border-width: 2px;
+    text-align: center;
+    border-radius: 30px;
+    padding: 5px;
+    background: #12A8C0;
+    margin-bottom: 10px;
+}
+
+.slidebar {
+    background-color: aqua;
+}
+
+.slider {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    height: 25px;
+    outline: none;
+    background: #12A8C0;
+    opacity: 0.8;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+    .slider:hover {
+        opacity: 0.6;
+    }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        background: white;
+        cursor: pointer;
+        border-radius: 3px;
+    }
+
+    .slider::-moz-range-thumb {
+        -moz-appearance: none;
+        width: 25px;
+        height: 25px;
+        background: white;
+        cursor: pointer;
+        border-radius: 3px;
+    }
+
+#ThickBorder td {
+    border: none;
+    border-right: 2px black solid;
+}
+
+#ThickBorder tr {
+    border: none;
+    border-bottom: 2px black solid;
+}
+
+    #ThickBorder tr:nth-of-type(3n) {
+        border-bottom: 5px black solid;
+    }
+
+    #ThickBorder tr > td:nth-of-type(3n) {
+        border-right: 5px black solid;
+    }
+
+@media only screen and (max-width: 750px) {
+    .pageHeader {
+        height: 50px;
+        min-width: 600px;
+        display: flex;
+    }
+
+    .form {
+        margin-top: 10px;
+    }
+
+    .sudokuMainContainer {
+        margin-left: 10%;
+        margin-top: 10px;
+    }
+
+    .sudokuSidebar {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        height: 200px;
+        background-color: lightgray;
+    }
+
+    .slidecontainer,
+    button {
+        margin-left: 10px;
+    }
+
+    .dropdownlistcontainer {
+        margin-left: 10px;
+    }
+
+    .buttonContainer {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-top: 10px;
+    }
+}
