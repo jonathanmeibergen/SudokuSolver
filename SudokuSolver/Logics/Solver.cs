@@ -75,7 +75,6 @@ namespace SudokuSolver.Logics
             int[] numberArray = new int[10];
             for (int i = 1; i < 9; i++)
             {
-                // geruik includes hiervoor en haal de cijfers uit de array (naar 0)
                 if (blockNumbers[i] > 0)
                 {
                     numberArray[blockNumbers[i]] = blockNumbers[i];
