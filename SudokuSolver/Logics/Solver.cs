@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Web;
 
 namespace SudokuSolver.Logics
@@ -15,22 +16,20 @@ namespace SudokuSolver.Logics
         int uniqueCandidateNumber;
         bool isFull = false;
 
-        public int[] getBlockNumbers(double rowNumber, double columnNumber, int[][] sudoku)
+        public int[] GetBlockNumbers(double rowNumber, double columnNumber, int[][] sudoku)
         {
-            double blockStartRow = rowNumber - (rowNumber%3);
+            double blockStartRow = rowNumber - (rowNumber % 3);
             double blockStartColumn = columnNumber - (columnNumber % 3);
 
             int[] blockNumbers = new int[9];
             int i = 0;
-            for (int r = (int)blockStartRow; r < blockStartRow+3;r++)
+            for (int r = (int)blockStartRow; r < blockStartRow + 3; r++)
             {
-                for (int c = (int)blockStartColumn; c < blockStartColumn+3; c++)
+                for (int c = (int)blockStartColumn; c < blockStartColumn + 3; c++)
                 {
                     if (c < 9 && r < 9)
                     {
                         blockNumbers[i] = sudoku[r][c] != 0 ? sudoku[r][c] : 0;
-                        Console.WriteLine(sudoku[r][c]);
-                        int test2 = i;
                         i++;
                     }
 
@@ -40,10 +39,10 @@ namespace SudokuSolver.Logics
             return blockNumbers;
         }
 
-        public int[] getRowNumbers(int row, int[][] sudoku)
+        public int[] GetRowNumbers(int row, int[][] sudoku)
         {
-            int[] rowNumbers = new int[9];
-            for (int i = 0; i < 9; i++)
+            int[] rowNumbers = new int[10];
+            for (int i = 0; i < 8; i++)
             {
                 rowNumbers[i] = sudoku[row][i];
             }
@@ -51,10 +50,10 @@ namespace SudokuSolver.Logics
             return rowNumbers;
         }
 
-        public int[] getColumnNumbers(int column, int[][] sudoku)
+        public int[] GetColumnNumbers(int column, int[][] sudoku)
         {
-            int[] columnNumbers = new int[9];
-            for (int i = 0; i < 9; i++)
+            int[] columnNumbers = new int[10];
+            for (int i = 0; i < 8; i++)
             {
                 columnNumbers[i] = sudoku[i][column];
             }
@@ -62,11 +61,11 @@ namespace SudokuSolver.Logics
             return columnNumbers;
         }
 
-        public int[] getAllCandidates(int rowNumber, int columnNumber, int[][] sudoku)
+        public int[] GetAllCandidates(int rowNumber, int columnNumber, int[][] sudoku)
         {
-            int[] blockNumbers = getBlockNumbers(rowNumber, columnNumber, sudoku);
-            int[] rowNumbers = getRowNumbers(rowNumber, sudoku);
-            int[] columnNumbers = getColumnNumbers(columnNumber, sudoku);
+            int[] blockNumbers = GetBlockNumbers(rowNumber, columnNumber, sudoku);
+            int[] rowNumbers = GetRowNumbers(rowNumber, sudoku);
+            int[] columnNumbers = GetColumnNumbers(columnNumber, sudoku);
 
             int[] numberArray = new int[10];
             for (int i = 0; i < 9; i++)
@@ -88,10 +87,26 @@ namespace SudokuSolver.Logics
             return numberArray;
         }
 
-        public int[] getRCCandidates(int rowNumber, int columnNumber, int[][] sudoku)
+        public int[] GetBlockCandidates(int rowNumber, int columnNumber, int[][] sudoku)
         {
-            int[] rowNumbers = getRowNumbers(rowNumber, sudoku);
-            int[] columnNumbers = getColumnNumbers(columnNumber, sudoku);
+            int[] blockNumbers = GetBlockNumbers(rowNumber, columnNumber, sudoku);
+
+            int[] numberArray = new int[10];
+            for (int i = 0; i < 9; i++)
+            {
+                if (blockNumbers[i] > 0)
+                {
+                    numberArray[blockNumbers[i]] = blockNumbers[i];
+                }
+            }
+
+            return numberArray;
+        }
+
+        public int[] GetRCCandidates(int rowNumber, int columnNumber, int[][] sudoku)
+        {
+            int[] rowNumbers = GetRowNumbers(rowNumber, sudoku);
+            int[] columnNumbers = GetColumnNumbers(columnNumber, sudoku);
 
             int[] numberArray = new int[10];
             for (int i = 0; i < 9; i++)
@@ -109,9 +124,9 @@ namespace SudokuSolver.Logics
             return numberArray;
         }
 
-        public int[] getRowCandidates(int rowNumber, int columnNumber, int[][] sudoku)
+        public int[] GetRowCandidates(int rowNumber, int columnNumber, int[][] sudoku)
         {
-            int[] rowNumbers = getRowNumbers(rowNumber, sudoku);
+            int[] rowNumbers = GetRowNumbers(rowNumber, sudoku);
 
             int[] numberArray = new int[10];
             for (int i = 0; i < 9; i++)
@@ -125,9 +140,9 @@ namespace SudokuSolver.Logics
             return numberArray;
         }
 
-        public int[] getColumnCandidates(int rowNumber, int columnNumber, int[][] sudoku)
+        public int[] GetColumnCandidates(int rowNumber, int columnNumber, int[][] sudoku)
         {
-            int[] columnNumbers = getRowNumbers(columnNumber, sudoku);
+            int[] columnNumbers = GetColumnNumbers(columnNumber, sudoku);
 
             int[] numberArray = new int[10];
             for (int i = 0; i < 9; i++)
@@ -141,27 +156,143 @@ namespace SudokuSolver.Logics
             return numberArray;
         }
 
-        public bool uniqueCandidate(int rowNumber, int columnNumber, int[][] sudoku)
+        public int UniqueCandidate(int rowNumber, int columnNumber, int[][] sudoku)
         {
-            int[] getMidCandidates = getAllCandidates(rowNumber, columnNumber, sudoku);
-            int[] getRCCandidatesBottemLeft = getAllCandidates(rowNumber-1, columnNumber-1, sudoku);
-            int[] getRCCandidatesTopRight = getAllCandidates(rowNumber+1, columnNumber+1, sudoku);
+            rowNumber = 2;
+            columnNumber = 6;
+            int rowNumberBottom = 0;
+            int rowNumberMid = 0;
+            int rowNumberTop = 0;
+            int columnNumberLeft = 0;
+            int columnNumberMid = 0;
+            int columnNumberRight = 0;
 
-            int[] numberArray = new int[10];
-            for (int i = 0; i < 9; i++)
+            if (rowNumber >= 0 || rowNumber <= 2)
             {
-                if (getMidCandidates[i] > 0)
-                {
-
-                }
-                if ()
+                rowNumberBottom = 2;
+                rowNumberMid = 1;
+                rowNumberTop = 0;
             }
-            return true;
+            else if (rowNumber >= 3 || rowNumber <= 5)
+            {
+                rowNumberBottom = 5;
+                rowNumberMid = 4;
+                rowNumberTop = 3;
+            }
+            else if (rowNumber >= 6 || rowNumber <= 8)
+            {
+                rowNumberBottom = 6;
+                rowNumberMid = 7;
+                rowNumberTop = 8;
+            }
+
+            if (columnNumber >= 0 || columnNumber <= 2)
+            {
+                columnNumberRight = 2;
+                columnNumberMid = 1;
+                columnNumberLeft = 0;
+            }
+            if (columnNumber >= 3 || columnNumber <= 5)
+            {
+                columnNumberRight = 5;
+                columnNumberMid = 4;
+                columnNumberLeft = 3;
+            }
+            if (columnNumber >= 6 || columnNumber <= 8)
+            {
+                columnNumberRight = 8;
+                columnNumberMid = 7;
+                columnNumberLeft = 6;
+            }
+
+
+            int[] blockNumber = GetBlockNumbers(rowNumber, columnNumber, sudoku);
+            bool hasLooped = false;
+            for (int j = 1; j < 10 && hasLooped == false; j++)
+            {
+                int[] blockCandidates = GetBlockCandidates(rowNumber, columnNumber, sudoku);
+
+                int[] rowTopCandidates = GetRowCandidates(rowNumberTop, columnNumber, sudoku);
+                int[] rowMidCandidates = GetRowCandidates(rowNumberMid, columnNumber, sudoku);
+                int[] rowBottomCandidates = GetRowCandidates(rowNumberBottom, columnNumber, sudoku);
+                int[] columnLeftCandidates = GetColumnCandidates(rowNumber, columnNumberLeft, sudoku);
+                int[] columnMidCandidates = GetColumnCandidates(rowNumber, columnNumberMid, sudoku);
+                int[] columnRightCandidates = GetColumnCandidates(rowNumber, columnNumberRight, sudoku);
+
+                if (blockCandidates[j] == 0 && sudoku[rowNumber][columnNumber] == 0)
+                {
+                    if (rowMidCandidates[j] == j)
+                    {
+                        blockNumber[3] = -1;
+                        blockNumber[4] = -1;
+                        blockNumber[5] = -1;
+                    }
+                    if (rowTopCandidates[j] == j)
+                    {
+                        blockNumber[6] = -1;
+                        blockNumber[7] = -1;
+                        blockNumber[8] = -1;
+                    }
+                    if (rowBottomCandidates[j] == j)
+                    {
+                        blockNumber[0] = -1;
+                        blockNumber[1] = -1;
+                        blockNumber[2] = -1;
+                    }
+                    if (columnMidCandidates[j] == j)
+                    {
+                        blockNumber[1] = -1;
+                        blockNumber[4] = -1;
+                        blockNumber[7] = -1;
+                    }
+                    if (columnLeftCandidates[j] == j)
+                    {
+                        blockNumber[0] = -1;
+                        blockNumber[3] = -1;
+                        blockNumber[6] = -1;
+                    }
+
+                    if (columnRightCandidates[j] == j)
+                    {
+                        blockNumber[2] = -1;
+                        blockNumber[5] = -1;
+                        blockNumber[8] = -1;
+                    }
+
+                    int zeroCount = 0;
+                    int solvedNumber = 0;
+                    for (int i = 0; i < 9; i++)
+                    {
+                        if (blockNumber[i] == 0)
+                        {
+                            zeroCount++;
+
+                            int row1 = Convert.ToInt32(Math.Floor(Convert.ToDouble(rowNumber / 3)));
+                            int row2 = Convert.ToInt32(Math.Floor(Convert.ToDouble(i / 3)));
+                            int column1 = columnNumber % 3;
+                            int column2 = i % 3;
+                            //int column1 = Convert.ToInt32(Math.Floor(Convert.ToDouble(columnNumber / 3)));
+                            //int column2 = Convert.ToInt32(Math.Floor(Convert.ToDouble(i / 3)));
+                            if (row1 == row2 && column1 == column2)
+                            {
+                                solvedNumber = j;
+                            }
+                        }
+                    }
+
+                    if (zeroCount == 1 && solvedNumber > 0 )
+                    {
+                        sudoku[rowNumber][columnNumber] = solvedNumber;
+                        break;
+                    }
+                }
+            }
+            return 0;
         }
 
-        public bool soleCandidate(int rowNumber,int columnNumber, int[][] sudoku)
+        public bool soleCandidate(int rowNumber, int columnNumber, int[][] sudoku)
         {
-            int[] candidates = getAllCandidates(rowNumber, columnNumber, sudoku);
+            int[] candidates = GetAllCandidates(rowNumber, columnNumber, sudoku);
 
 
             int zeroCount = 0;
@@ -182,17 +313,13 @@ namespace SudokuSolver.Logics
             return true;
         }
 
-        public bool uniqueCandidate()
-        {
-            return true;
-        }
-
 
         public int[][] Solve(int[][] sudoku)
         {
             int emptyCells = 0;
             int emptyCellsPrev = -1;
-            while (emptyCells != emptyCellsPrev && emptyCells < 100000)
+            int runs = 0;
+            while (emptyCells != emptyCellsPrev && runs < 10000)
             {
                 emptyCellsPrev = emptyCells;
 
@@ -202,16 +329,19 @@ namespace SudokuSolver.Logics
                     {
                         if (sudoku[r][c] == 0)
                         {
-                            soleCandidate(r, c, sudoku);
+                            //soleCandidate(r, c, sudoku);
+                            UniqueCandidate(r, c, sudoku);
                             emptyCells++;
                         }
                     }
                 }
+                Debug.WriteLine(runs);
+                runs++;
             }
 
 
             return sudoku;
-        }   
+        }
 
         public int[][] SolveGuessing(int[][] sudoku)
         {
