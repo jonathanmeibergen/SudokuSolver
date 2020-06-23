@@ -9,6 +9,19 @@ using System.Web;
 
 namespace SudokuSolver.Logics
 {
+    public class Cell
+    {
+        public Cell(int row, int column)
+        {
+            _row = row;
+        }
+        public int _row { get; private set; }
+
+        int[] candidates;
+    }
+
+
+
     public class Solver
     {
         public int[] getBlockNumbers(double rowNumber, double columnNumber, int[][] sudoku)
@@ -29,7 +42,6 @@ namespace SudokuSolver.Logics
                         int test2 = i;
                         i++;
                     }
-
                 }
             }
 
