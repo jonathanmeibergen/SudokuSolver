@@ -229,12 +229,8 @@ namespace SudokuSolver.Logics
                 ++row;
                 col = 0;
                 if (row == 9)
-                {
                     return true;
-                }
             }
-
-            int sudokuNum = 0;
 
             if (sudoku[row][col] == 0)
             {
@@ -255,8 +251,6 @@ namespace SudokuSolver.Logics
                 sudoku[row][col] = 0;
             }
             else{
-                sudokuNum = sudoku[row][col];
-                
                 solved = solveRec(row, col+1, sudoku);
                 if (solved)
                     return true;
