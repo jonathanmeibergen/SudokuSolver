@@ -221,57 +221,58 @@ namespace SudokuSolver.Logics
             return sudoku;
         }
 
-        public void solveRec(int row, int col, int[][] sudoku)
+        public bool solveRec(int row, int col, int[][] sudoku)
         {
+            bool solved = false;
             if (col == 9)
             {
-                row++;
+                ++row;
                 col = 0;
                 if (row == 9)
-                    return;
+                {
+                    return true;
+                }
             }
 
-            Debug.WriteLine(string.Format("=======cell {0}{1}=======", row, col));
             int sudokuNum = 0;
-            Debug.WriteLine(string.Format("======sudoku [{0}]=======", sudokuNum));
 
             if (sudoku[row][col] == 0)
             {
                 List<int> candidates = new List<int>(getAllCandidates(row, col, sudoku));
                 candidates.RemoveAll(item => item == 0);
 
-                if (candidates.Max() == 0 || candidates.Count == 0)
-                    return;
+                if (candidates.Count == 0)
+                    return false;
 
                 foreach (var guess in candidates)
                 {
-
-                    if (guess == 0)
-                        continue;
-
                     sudoku[row][col] = guess;
-                    Debug.WriteLine(string.Format("======guess {0}======", guess));
-
-                    if (col < 10)
-                        solveRec(row, col + 1, sudoku);
-
-                    sudoku[row][col] = 0;
+                     
+                    solved = solveRec(row, col + 1, sudoku);
+                    if (solved)
+                        return true;
                 }
-                Debug.WriteLine(string.Format("===return cell {0}{1}===", row, col));
+                sudoku[row][col] = 0;
             }
-            else {
+            else{
                 sudokuNum = sudoku[row][col];
-                solveRec(row, col+1, sudoku);
+                
+                solved = solveRec(row, col+1, sudoku);
+                if (solved)
+                    return true;
             }
+            return false;
         }
 
         public int[][] Solve(int[][] sudoku)
         {
+            
             return solveWithForLoops(sudoku);
         }   
 
         public int[][] SolveGuessing(int[][] sudoku)
         {
+            //sudoku[0][0] = 6;
             solveRec(0, 0, sudoku);
             return sudoku;
         }
