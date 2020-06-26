@@ -223,38 +223,53 @@ namespace SudokuSolver.Logics
 
         public bool solveRec(int row, int col, int[][] sudoku)
         {
-            bool solved = false;
+            //walking trough the sudoku from top left to bottom right
             if (col == 9)
             {
-                ++row;
-                col = 0;
+                //next line please
+                ++row; col = 0;
+                //if we hit the last column on the last row it means we are succesfull and 
+                //so we should tell 'true' to our ancestor function and 
+                //let it cascade all the way up trough the call chain
                 if (row == 9)
                     return true;
             }
 
+            //if the current cell is 0 lets try to fill it
             if (sudoku[row][col] == 0)
             {
+                //get all canditates for the current cell
                 List<int> candidates = new List<int>(getAllCandidates(row, col, sudoku));
+                //sanitize the candidates list
                 candidates.RemoveAll(item => item == 0);
 
+                //if there are no candidates return to previous function call, nothing to guess here
                 if (candidates.Count == 0)
                     return false;
 
+                //if there are candidates, walk through them in a linear fashion
                 foreach (var guess in candidates)
                 {
+                    //lets try out a guess from candidates
                     sudoku[row][col] = guess;
-                     
-                    solved = solveRec(row, col + 1, sudoku);
-                    if (solved)
+
+                    //now lets move on to the next cell and get some work done.
+                    //When eventually succesfull please pass on the good news to our ancestor function call
+                    if (solveRec(row, col + 1, sudoku))
+                        // great so far so good, go up the call chain
                         return true;
                 }
+                //end of our guesses, lets restore the current cell to 0, we'll be back with different guesses 
                 sudoku[row][col] = 0;
             }
-            else{
-                solved = solveRec(row, col+1, sudoku);
-                if (solved)
+            //if the current cell is not empty, please leave it alone, its the part of the 
+            //sudoku we are trying to solve, move on to the next cell please!
+            else if (solveRec(row, col + 1, sudoku))
+                    // great so far so good, go up the call chain
                     return true;
-            }
+
+            //well it seemes we didnt solve anything here, better luck next time..., 
+            //go up the call chain and see what we can do up there
             return false;
         }
 
