@@ -206,10 +206,10 @@ namespace SudokuSolver.Logics
             }
 
 
-            int[] blockNumber = GetBlockNumbers(rowNumber, columnNumber, sudoku);
             bool hasLooped = false;
             for (int j = 1; j < 10 && hasLooped == false; j++)
             {
+                int[] blockNumber = GetBlockNumbers(rowNumber, columnNumber, sudoku);
                 int[] blockCandidates = GetBlockCandidates(rowNumber, columnNumber, sudoku);
 
                 int[] rowTopCandidates = GetRowCandidates(rowNumberTop, columnNumber, sudoku);
@@ -229,15 +229,15 @@ namespace SudokuSolver.Logics
                     }
                     if (rowTopCandidates[j] == j)
                     {
-                        blockNumber[6] = -1;
-                        blockNumber[7] = -1;
-                        blockNumber[8] = -1;
-                    }
-                    if (rowBottomCandidates[j] == j)
-                    {
                         blockNumber[0] = -1;
                         blockNumber[1] = -1;
                         blockNumber[2] = -1;
+                    }
+                    if (rowBottomCandidates[j] == j)
+                    {
+                        blockNumber[6] = -1;
+                        blockNumber[7] = -1;
+                        blockNumber[8] = -1;
                     }
                     if (columnMidCandidates[j] == j)
                     {
@@ -261,18 +261,15 @@ namespace SudokuSolver.Logics
 
                     int zeroCount = 0;
                     int solvedNumber = 0;
-                    for (int i = 0; i < 9; i++)
+                    for (int i = 0; i < 9 && zeroCount < 3; i++)
                     {
                         if (blockNumber[i] == 0)
                         {
                             zeroCount++;
-
-                            int row1 = Convert.ToInt32(Math.Floor(Convert.ToDouble(rowNumber / 3)));
-                            int row2 = Convert.ToInt32(Math.Floor(Convert.ToDouble(i / 3)));
-                            int column1 = columnNumber % 3;
-                            int column2 = i % 3;
-                            //int column1 = Convert.ToInt32(Math.Floor(Convert.ToDouble(columnNumber / 3)));
-                            //int column2 = Convert.ToInt32(Math.Floor(Convert.ToDouble(i / 3)));
+                            int row1 = Convert.ToInt32(Math.Floor(Convert.ToDouble((rowNumber+1) / 3)));
+                            int column1 = (columnNumber+1) % 3;
+                            int row2 = Convert.ToInt32(Math.Floor(Convert.ToDouble((i+1) / 3)-1));
+                            int column2 = (i+1) % 3;
                             if (row1 == row2 && column1 == column2)
                             {
                                 solvedNumber = j;
@@ -282,6 +279,7 @@ namespace SudokuSolver.Logics
 
                     if (zeroCount == 1 && solvedNumber > 0 )
                     {
+                        return solvedNumber;
                         sudoku[rowNumber][columnNumber] = solvedNumber;
                         break;
                     }
@@ -290,7 +288,7 @@ namespace SudokuSolver.Logics
             return 0;
         }
 
-        public bool soleCandidate(int rowNumber, int columnNumber, int[][] sudoku)
+        public int soleCandidate(int rowNumber, int columnNumber, int[][] sudoku)
         {
             int[] candidates = GetAllCandidates(rowNumber, columnNumber, sudoku);
 
@@ -307,10 +305,11 @@ namespace SudokuSolver.Logics
             }
             if (zeroCount == 1)
             {
+                return solvedNumber;
                 sudoku[rowNumber][columnNumber] = solvedNumber;
             }
 
-            return true;
+            return 0;
         }
 
 
@@ -319,7 +318,7 @@ namespace SudokuSolver.Logics
             int emptyCells = 0;
             int emptyCellsPrev = -1;
             int runs = 0;
-            while (emptyCells != emptyCellsPrev && runs < 10000)
+            while (emptyCells != emptyCellsPrev && runs < 1000)
             {
                 emptyCellsPrev = emptyCells;
 
