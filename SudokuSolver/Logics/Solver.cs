@@ -158,8 +158,6 @@ namespace SudokuSolver.Logics
 
         public int UniqueCandidate(int rowNumber, int columnNumber, int[][] sudoku)
         {
-            rowNumber = 2;
-            columnNumber = 6;
             int rowNumberBottom = 0;
             int rowNumberMid = 0;
             int rowNumberTop = 0;
