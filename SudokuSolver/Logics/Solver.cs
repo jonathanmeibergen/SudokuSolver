@@ -221,17 +221,17 @@ namespace SudokuSolver.Logics
 
                 if (blockCandidates[j] == 0 && sudoku[rowNumber][columnNumber] == 0)
                 {
-                    if (rowMidCandidates[j] == j)
-                    {
-                        blockNumber[3] = -1;
-                        blockNumber[4] = -1;
-                        blockNumber[5] = -1;
-                    }
                     if (rowTopCandidates[j] == j)
                     {
                         blockNumber[0] = -1;
                         blockNumber[1] = -1;
                         blockNumber[2] = -1;
+                    }
+                    if (rowMidCandidates[j] == j)
+                    {
+                        blockNumber[3] = -1;
+                        blockNumber[4] = -1;
+                        blockNumber[5] = -1;
                     }
                     if (rowBottomCandidates[j] == j)
                     {
@@ -239,25 +239,27 @@ namespace SudokuSolver.Logics
                         blockNumber[7] = -1;
                         blockNumber[8] = -1;
                     }
-                    if (columnMidCandidates[j] == j)
-                    {
-                        blockNumber[1] = -1;
-                        blockNumber[4] = -1;
-                        blockNumber[7] = -1;
-                    }
+
+
                     if (columnLeftCandidates[j] == j)
                     {
                         blockNumber[0] = -1;
                         blockNumber[3] = -1;
                         blockNumber[6] = -1;
                     }
-
+                    if (columnMidCandidates[j] == j)
+                    {
+                        blockNumber[1] = -1;
+                        blockNumber[4] = -1;
+                        blockNumber[7] = -1;
+                    }
                     if (columnRightCandidates[j] == j)
                     {
                         blockNumber[2] = -1;
                         blockNumber[5] = -1;
                         blockNumber[8] = -1;
                     }
+
 
                     int zeroCount = 0;
                     int solvedNumber = 0;
@@ -266,10 +268,10 @@ namespace SudokuSolver.Logics
                         if (blockNumber[i] == 0)
                         {
                             zeroCount++;
-                            int row1 = Convert.ToInt32(Math.Floor(Convert.ToDouble((rowNumber+1) / 3)));
-                            int column1 = (columnNumber+1) % 3;
-                            int row2 = Convert.ToInt32(Math.Floor(Convert.ToDouble((i+1) / 3)-1));
-                            int column2 = (i+1) % 3;
+                            int row1 = Convert.ToInt32(Math.Floor(Convert.ToDouble((rowNumber + 1) / 3)));
+                            int column1 = (columnNumber + 1) % 3;
+                            int row2 = Convert.ToInt32(Math.Floor(Convert.ToDouble((i + 1) / 3) - 1));
+                            int column2 = (i + 1) % 3;
                             if (row1 == row2 && column1 == column2)
                             {
                                 solvedNumber = j;
@@ -277,10 +279,9 @@ namespace SudokuSolver.Logics
                         }
                     }
 
-                    if (zeroCount == 1 && solvedNumber > 0 )
+                    if (zeroCount == 1 && solvedNumber > 0)
                     {
                         return solvedNumber;
-                        sudoku[rowNumber][columnNumber] = solvedNumber;
                         break;
                     }
                 }
@@ -303,6 +304,7 @@ namespace SudokuSolver.Logics
                     zeroCount++;
                 }
             }
+
             if (zeroCount == 1)
             {
                 return solvedNumber;
