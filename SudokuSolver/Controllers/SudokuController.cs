@@ -1,4 +1,5 @@
-﻿using SudokuSolver.Logics;
+﻿using Microsoft.Ajax.Utilities;
+using SudokuSolver.Logics;
 using SudokuSolver.Models;
 using System;
 using System.Collections.Generic;
@@ -77,9 +78,9 @@ namespace SudokuSolver.Controllers
         /// Creates a randomized sudoku using the empty sudoku.
         /// </summary>
         /// <returns></returns>
-        public ActionResult CreateSudoku()
+        public ActionResult CreateSudoku(Random rnd)
         {
-            sudokuModel.Cells = solver.Create(SudokuList.ElementAt(2).Cells);
+            sudokuModel.Cells = solver.Create(SudokuList.ElementAt(2).Cells, rnd);
             TempData["sudoku"] = sudokuModel;
             return RedirectToAction("Sudoku");
         }
