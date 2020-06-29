@@ -1,4 +1,4 @@
-﻿using Microsoft.Ajax.Utilities;
+using Microsoft.Ajax.Utilities;
 using SudokuSolver.Models;
 using System;
 using System.Collections;
