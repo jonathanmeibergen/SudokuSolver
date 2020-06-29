@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Web;
 
 namespace SudokuSolver.Logics
@@ -318,7 +319,7 @@ namespace SudokuSolver.Logics
             int emptyCells = 0;
             int emptyCellsPrev = -1;
             int runs = 0;
-            while (emptyCells != emptyCellsPrev && runs < 1000)
+            while (emptyCells != emptyCellsPrev && runs < 100)
             {
                 emptyCellsPrev = emptyCells;
 
@@ -334,11 +335,47 @@ namespace SudokuSolver.Logics
                         }
                     }
                 }
-                Debug.WriteLine(runs);
+                //Debug.WriteLine(runs);
                 runs++;
             }
 
 
+            return sudoku;
+        }
+
+        public int ZeroChecker(int[][] sudoku)
+        {
+            int zeroCount = 0;
+            for (int r = 0; r < 9; r++)
+            {
+                for (int c = 0; c < 9; c++)
+                {
+                    if (sudoku[r][c] == 0)
+                    {
+                        zeroCount++;
+                    }
+                }
+            }
+
+            return zeroCount;
+        }
+
+        public int[][] EnterNumberInSudoku(int[][] sudoku)
+        {
+            var rand = new Random();
+            int randomNumber1 = rand.Next(0, 9);
+            int randomNumber2 = rand.Next(0, 9);
+
+            int randomNumber3 = rand.Next(1, 10);
+
+            int[] getCandidates = GetAllCandidates(randomNumber1, randomNumber2, sudoku);
+            for (int i = 0; i < 10; i++) 
+            {
+                if (getCandidates[i] == 0)
+                {
+                    sudoku[randomNumber1][randomNumber2] = i;
+                }
+            }
             return sudoku;
         }
 
@@ -347,7 +384,7 @@ namespace SudokuSolver.Logics
             int emptyCells = 0;
             int emptyCellsPrev = -1;
             int loopCount = 0;
-            while (emptyCells != emptyCellsPrev && loopCount < 1000)
+            while (emptyCells != emptyCellsPrev && loopCount < 100)
             {
                 emptyCellsPrev = emptyCells;
 
@@ -368,8 +405,60 @@ namespace SudokuSolver.Logics
             return sudoku;
         }
 
+        static int[][] CopyArrayBuiltIn(int[][] source)
+        {
+            var len = source.Length;
+            var dest = new int[len][];
+
+            for (var x = 0; x < len; x++)
+            {
+                var inner = source[x];
+                var ilen = inner.Length;
+                var newer = new int[ilen];
+                Array.Copy(inner, newer, ilen);
+                dest[x] = newer;
+            }
+
+            return dest;
+        }
+
         public int[][] Create(int[][] sudoku)
         {
+            sudoku[2][2] = 1;
+
+            int[][] empty = CopyArrayBuiltIn(sudoku);
+            int[][] sudokuReturn = Solve(sudoku);
+            int[][] newArray = CopyArrayBuiltIn(sudoku);
+
+            int runs = 0;
+            if (ZeroChecker(sudokuReturn) == 81)
+            {
+                newArray[2][2] = 1;
+            }
+            while (ZeroChecker(sudokuReturn) > 0 && runs < 100)
+            {
+                int[][] newNewArray = Solve(newArray);
+                if (ZeroChecker(newNewArray) == 0)
+                {
+                    sudoku = CopyArrayBuiltIn(newArray);
+                }
+                else
+                {
+                    newArray = EnterNumberInSudoku(sudoku);
+                }
+
+                if (runs > 95 && ZeroChecker(newNewArray) > 0)
+                {
+                    int zero = ZeroChecker(newNewArray);
+                    Debug.WriteLine(zero);
+                    runs = 0;
+                    newArray = CopyArrayBuiltIn(empty);
+                }
+
+                //Debug.WriteLine(runs);
+                runs++;
+            }
+
             return sudoku;
         }
     }
