@@ -153,7 +153,8 @@ namespace SudokuSolver.Logics
                         // its solved let it cascade
                         return true;
                 }
-                //end of our guesses, lets restore the current cell to 0, we'll be back with different guesses 
+                //end of our guesses, lets restore the current cell to 0,
+                //well be back with different guesses 
                 sudoku[row][col] = 0;
             }
             //if the current cell is not empty, please leave it alone, its the part of the 
@@ -181,33 +182,72 @@ namespace SudokuSolver.Logics
 
         public int[][] Create(int[][] sudoku, Random rnd)
         {
-            solveRec(0, 0, sudoku, rnd.Next(1,1));
+            solveRec(0, 0, sudoku, 1);
             
-            int[] rowSwap;
             int rndInt = 0, colSwap;
 
             //insert 1 trough 9 diagonally
-            for (int i = 8; i >= 0; i--)
+            for (int i = 2; i >= 0; i--)
             {
-                rndInt = rnd.Next(0, i);
-                sudoku[i][i] = i + 1;
-            }
-
-            for (int j = 0; j < 9; j++)
-            {
-
-            }
-
-            //swap columns and rows
-            for (int i = 8; i >= 0; i--)
-            {
-                rndInt = rnd.Next(0, i);
-
-                for (int j = 0; j < 9; j++)
+                for (int j = 2; j >= 0; j--)
                 {
-                    colSwap = sudoku[j][i];
-                    sudoku[j][i] = sudoku[j][rndInt];
-                    sudoku[j][rndInt] = colSwap;
+                    rndInt = rnd.Next(0, j);
+                    int colIndex = (i * 3) + j;
+                    int colRnd = (i * 3) + rndInt;
+                    for (int k = 0; k < 9; k++)
+                    {
+                        colSwap = sudoku[k][colIndex];
+                                  sudoku[k][colIndex] = sudoku[k][colRnd];
+                                  sudoku[k][colRnd] = colSwap;
+                    }
+                }
+            }
+
+            for (int i = 2; i >= 0; i--)
+            {
+                for (int j = 2; j >= 0; j--)
+                {
+                    rndInt = rnd.Next(0, j);
+                    int[] rowSwap;
+                    int rowIndex = (i * 3) + j;
+                    int rowRnd = (i * 3) + rndInt;
+                        rowSwap = sudoku[rowIndex];
+                        sudoku[rowIndex] = sudoku[rowRnd];
+                        sudoku[rowRnd] = rowSwap;
+
+                }
+
+            }
+
+            for (int i = 2; i >= 0; i--)
+            {
+                rndInt = rnd.Next(0, i);
+
+                for (int j = 2; j <= 0; j++)
+                {
+                    int[] rowSwap;
+                    int rowIndex = (i * 3) + j;
+                    int rowRnd = (rndInt * 3) + j;
+                    rowSwap = sudoku[rowIndex];
+                    sudoku[rowIndex] = sudoku[rowRnd];
+                    sudoku[rowRnd] = rowSwap;
+                }
+            }
+
+            for (int i = 2; i >= 0; i--)
+            {
+                rndInt = rnd.Next(0, i);
+
+                for (int j = 2; j >= 0; j--)
+                {
+                    int colIndex = (i * 3) + j;
+                    int colRnd = (rndInt * 3) + j;
+                    for (int k = 0; k < 9; k++)
+                    {
+                        colSwap = sudoku[k][colIndex];
+                        sudoku[k][colIndex] = sudoku[k][colRnd];
+                        sudoku[k][colRnd] = colSwap;
+                    }
                 }
             }
 
