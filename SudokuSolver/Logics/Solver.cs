@@ -1,9 +1,10 @@
-﻿using Microsoft.Ajax.Utilities;
+using Microsoft.Ajax.Utilities;
 using SudokuSolver.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO.Pipes;
 using System.Linq;
 using System.Web;
 
@@ -85,7 +86,7 @@ namespace SudokuSolver.Logics
         }
 
 
-        public int[][] solveWithForLoops(int [][] sudoku)
+        public int[][] solveLogical(int [][] sudoku)
         {
             int emptyCells = 0;
             int emptyCellsPrev = -1;
@@ -107,6 +108,21 @@ namespace SudokuSolver.Logics
             }
 
             return sudoku;
+        }
+
+        static int[][] CopyArrayBuiltIn(int[][] source)
+        {
+            var len = source.Length;
+            var dest = new int[len][];
+            for (var x = 0; x < len; x++)
+            {
+                var inner = source[x];
+                var ilen = inner.Length;
+                var newer = new int[ilen];
+                Array.Copy(inner, newer, ilen);
+                dest[x] = newer;
+            }
+            return dest;
         }
 
         public bool solveRec(int row, int col, int[][] sudoku, int rndInt)
@@ -153,7 +169,8 @@ namespace SudokuSolver.Logics
                         // its solved let it cascade
                         return true;
                 }
-                //end of our guesses, lets restore the current cell to 0, we'll be back with different guesses 
+                //end of our guesses, lets restore the current cell to 0,
+                //well be back with different guesses 
                 sudoku[row][col] = 0;
             }
             //if the current cell is not empty, please leave it alone, its the part of the 
@@ -170,7 +187,7 @@ namespace SudokuSolver.Logics
         public int[][] Solve(int[][] sudoku)
         {
             
-            return solveWithForLoops(sudoku);
+            return solveLogical(sudoku);
         }   
 
         public int[][] SolveGuessing(int[][] sudoku)
@@ -181,39 +198,128 @@ namespace SudokuSolver.Logics
 
         public int[][] Create(int[][] sudoku, Random rnd)
         {
-            solveRec(0, 0, sudoku, rnd.Next(1,1));
+            solveRec(0, 0, sudoku, 1);
             
-            int[] rowSwap;
             int rndInt = 0, colSwap;
 
             //insert 1 trough 9 diagonally
-            for (int i = 8; i >= 0; i--)
+            for (int i = 2; i >= 0; i--)
             {
-                rndInt = rnd.Next(0, i);
-                sudoku[i][i] = i + 1;
-            }
-
-            for (int j = 0; j < 9; j++)
-            {
-
-            }
-
-            //swap columns and rows
-            for (int i = 8; i >= 0; i--)
-            {
-                rndInt = rnd.Next(0, i);
-
-                for (int j = 0; j < 9; j++)
+                for (int j = 2; j >= 0; j--)
                 {
-                    colSwap = sudoku[j][i];
-                    sudoku[j][i] = sudoku[j][rndInt];
-                    sudoku[j][rndInt] = colSwap;
+                    rndInt = rnd.Next(0, j);
+                    int colIndex = (i * 3) + j;
+                    int colRnd = (i * 3) + rndInt;
+                    for (int k = 0; k < 9; k++)
+                    {
+                        colSwap = sudoku[k][colIndex];
+                                  sudoku[k][colIndex] = sudoku[k][colRnd];
+                                  sudoku[k][colRnd] = colSwap;
+                    }
                 }
             }
 
+            for (int i = 2; i >= 0; i--)
+            {
+                for (int j = 2; j >= 0; j--)
+                {
+                    rndInt = rnd.Next(0, j);
+                    int[] rowSwap;
+                    int rowIndex = (i * 3) + j;
+                    int rowRnd = (i * 3) + rndInt;
+                        rowSwap = sudoku[rowIndex];
+                        sudoku[rowIndex] = sudoku[rowRnd];
+                        sudoku[rowRnd] = rowSwap;
+
+                }
+
+            }
+
+            for (int i = 2; i >= 0; i--)
+            {
+                rndInt = rnd.Next(0, i);
+
+                for (int j = 2; j <= 0; j++)
+                {
+                    int[] rowSwap;
+                    int rowIndex = (i * 3) + j;
+                    int rowRnd = (rndInt * 3) + j;
+                    rowSwap = sudoku[rowIndex];
+                    sudoku[rowIndex] = sudoku[rowRnd];
+                    sudoku[rowRnd] = rowSwap;
+                }
+            }
+
+            for (int i = 2; i >= 0; i--)
+            {
+                rndInt = rnd.Next(0, i);
+
+                for (int j = 2; j >= 0; j--)
+                {
+                    int colIndex = (i * 3) + j;
+                    int colRnd = (rndInt * 3) + j;
+                    for (int k = 0; k < 9; k++)
+                    {
+                        colSwap = sudoku[k][colIndex];
+                        sudoku[k][colIndex] = sudoku[k][colRnd];
+                        sudoku[k][colRnd] = colSwap;
+                    }
+                }
+            }
+
+            int[] picks = new int[81];
+            List<int> indices = new List<int>();
+            for (int i = 0; i < picks.Length; i++)
+            {
+                indices.Add(i);
+            }
+            for (int i = indices.Count-1; i > 0; i--)
+            {
+                rndInt = rnd.Next(0, i);
+
+                int swap = indices[i];
+                indices[i] = indices[rndInt];
+                indices[rndInt] = swap;
+            }
+
+            int[][] sudokuCopy = CopyArrayBuiltIn(sudoku);
+
+            for (int i = 0; i < 3; i++)
+            {
+
+
+                foreach (var item in indices)
+                {
+                    if (picks[item] > -1)
+                    {
+                        int row = Convert.ToInt32(Math.Floor(Convert.ToDecimal(item / 9)));
+                        int col = item % 9;
+                        sudokuCopy[row][col] = 0;
+                        int[][] sudokuCopyCopy = solveLogical(CopyArrayBuiltIn(sudokuCopy));
+                        if (sudokuCopyCopy[row][col] > 0)
+                        {
+                            sudokuCopy[row][col] = 0;
+                            picks[item] = -1;
+                        }
+                        else
+                        {
+                            sudokuCopy[row][col] = sudoku[row][col];
+                            picks[item] = 1;
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < picks.Length; i++)
+            {
+                int row = Convert.ToInt32(Math.Floor(Convert.ToDecimal(i / 9)));
+                int col = i % 9;
+                sudokuCopy[row][col] = picks[i] == -1 ? 0 : sudokuCopy[row][col];
+            }
+
+
             //solveRec(0, rnd.Next(0,10), sudoku, 10);
 
-            return sudoku;
+            return sudokuCopy;
         }
     }
 }wax
