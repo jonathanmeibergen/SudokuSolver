@@ -88,21 +88,25 @@ namespace SudokuSolver.Logics
 
         public int[][] solveLogical(int[][] sudoku)
         {
-            int emptyCells = 0;
-            int emptyCellsPrev = -1;
-            while (emptyCells != emptyCellsPrev && emptyCells < 100000)
+            int ivar = 81;
+            int skip = 0;
+            while (ivar > 1)
             {
-                emptyCellsPrev = emptyCells;
-
                 for (int r = 0; r < 9; r++)
                 {
                     for (int c = 0; c < 9; c++)
                     {
                         if (sudoku[r][c] == 0)
                         {
-                            sudoku[r][c] = soleCandidate(r, c, sudoku);
-                            emptyCells++;
+                            int value = soleCandidate(r, c, sudoku);
+                            if (value > 0)
+                            {
+                                sudoku[r][c] = value;
+                            }
                         }
+                        else 
+                            --ivar;
+
                     }
                 }
             }
@@ -265,7 +269,6 @@ namespace SudokuSolver.Logics
                 }
             }
 
-            //int[] picks = new int[81];
             List<int> indices = new List<int>();
             for (int i = 0; i < 81; i++)
             {
@@ -281,38 +284,29 @@ namespace SudokuSolver.Logics
             }
 
             List<int[]> picks = new List<int[]>();
-            //int[][] sudokuCopy = CopyArrayBuiltIn(sudoku);
             foreach (var item in indices)
             {
                 int row = Convert.ToInt32(Math.Floor(Convert.ToDecimal(item / 9)));
                 int col = item % 9;
                 int[] coord = new int[2] { row, col };
-                bool delete = false;
-
-
-                picks.Add(coord);
 
                 int cellValue = sudoku[row][col];
                 sudoku[row][col] = 0;
 
+                int[][] temp = solveLogical(sudoku);
+
+                if (temp[row][col] == 0)
+                {
+                    sudoku[row][col] = cellValue;
+                }
+
                 foreach (var pick in picks)
                 {
-
-                    solveLogical(pick[0], pick[1], sudoku)
-
-                    if (solveLogical(pick[0], pick[1], sudoku).Count == 1)
-                    {
-                        //solve works incremental and not on a cell per cell basis
-                        sudoku[pick[0]][pick[1]] = cellValue;
-                        delete = true;
-                        break;
-                    } else
-                    {
-
-                    }
+                    sudoku[pick[0]][pick[1]] = 0;
                 }
-                if(delete)
-                    picks.RemoveAt(picks.Count - 1);
+                picks.Add(coord);
+
+
             }
             return sudoku;
         }
