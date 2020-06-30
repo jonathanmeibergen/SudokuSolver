@@ -131,7 +131,6 @@ namespace SudokuSolver.Logics
             //Debug.WriteLine(new String('=', (row * 9) + col + 1) + " " + DateTime.Now);
             int random = rnd.Next(1, rndInt);
 
-
             //walking trough the sudoku from top left to bottom right
             if (col >= 9)
             {
@@ -202,7 +201,6 @@ namespace SudokuSolver.Logics
 
             int rndInt = 0, colSwap;
 
-            //insert 1 trough 9 diagonally
             for (int i = 2; i >= 0; i--)
             {
                 for (int j = 2; j >= 0; j--)
@@ -283,6 +281,7 @@ namespace SudokuSolver.Logics
             }
 
             List<int[]> picks = new List<int[]>();
+            //int[][] sudokuCopy = CopyArrayBuiltIn(sudoku);
             foreach (var item in indices)
             {
                 int row = Convert.ToInt32(Math.Floor(Convert.ToDecimal(item / 9)));
@@ -298,12 +297,18 @@ namespace SudokuSolver.Logics
 
                 foreach (var pick in picks)
                 {
-                    if (soleCandidate(pick[0], pick[1], sudoku) == 0)
+
+                    solveLogical(pick[0], pick[1], sudoku)
+
+                    if (solveLogical(pick[0], pick[1], sudoku).Count == 1)
                     {
                         //solve works incremental and not on a cell per cell basis
                         sudoku[pick[0]][pick[1]] = cellValue;
                         delete = true;
                         break;
+                    } else
+                    {
+
                     }
                 }
                 if(delete)
