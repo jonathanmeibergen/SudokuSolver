@@ -9,7 +9,7 @@ using System.Linq;
 using System.Web;
 
 namespace SudokuSolver.Logics
-{ 
+{
     public class Cell
     {
         public Cell(int row, int column)
@@ -29,12 +29,12 @@ namespace SudokuSolver.Logics
 
         public List<int> getBlockNumbers(double rowNumber, double columnNumber, ref List<int> candidates, int[][] sudoku)
         {
-            double blockStartRow = rowNumber - (rowNumber%3);
+            double blockStartRow = rowNumber - (rowNumber % 3);
             double blockStartColumn = columnNumber - (columnNumber % 3);
 
-            for (int r = (int)blockStartRow; r < blockStartRow+3;r++)
+            for (int r = (int)blockStartRow; r < blockStartRow + 3; r++)
             {
-                for (int c = (int)blockStartColumn; c < blockStartColumn+3; c++)
+                for (int c = (int)blockStartColumn; c < blockStartColumn + 3; c++)
                 {
                     candidates.Remove(sudoku[r][c]);
                 }
@@ -65,7 +65,7 @@ namespace SudokuSolver.Logics
 
         public List<int> getAllCandidates(int rowNumber, int columnNumber, int[][] sudoku)
         {
-            List<int> candidates = new List<int>{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            List<int> candidates = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
             getBlockNumbers(rowNumber, columnNumber, ref candidates, sudoku);
             getRowNumbers(rowNumber, ref candidates, sudoku);
             getColumnNumbers(columnNumber, ref candidates, sudoku);
@@ -73,20 +73,20 @@ namespace SudokuSolver.Logics
             return candidates;
         }
 
-        public bool soleCandidate(int rowNumber,int columnNumber, int[][] sudoku)
+        public int soleCandidate(int rowNumber, int columnNumber, int[][] sudoku)
         {
             List<int> candidates = getAllCandidates(rowNumber, columnNumber, sudoku);
-           
+
             if (candidates.Count == 1)
             {
-                sudoku[rowNumber][columnNumber] = candidates[0];
+                return candidates[0];
             }
 
-            return true;
+            return 0;
         }
 
 
-        public int[][] solveLogical(int [][] sudoku)
+        public int[][] solveLogical(int[][] sudoku)
         {
             int emptyCells = 0;
             int emptyCellsPrev = -1;
@@ -100,7 +100,7 @@ namespace SudokuSolver.Logics
                     {
                         if (sudoku[r][c] == 0)
                         {
-                            soleCandidate(r, c, sudoku);
+                            sudoku[r][c] = soleCandidate(r, c, sudoku);
                             emptyCells++;
                         }
                     }
@@ -164,7 +164,7 @@ namespace SudokuSolver.Logics
 
                     //now lets move on to the next cell and get some work done.
                     //When eventually succesfull please pass on the good news to our ancestor function call
-                    
+
                     if (solveRec(row, col + random, sudoku, rndInt))
                         // its solved let it cascade
                         return true;
@@ -176,8 +176,8 @@ namespace SudokuSolver.Logics
             //if the current cell is not empty, please leave it alone, its the part of the 
             //sudoku we are trying to solve, move on to the next cell please!
             else if (solveRec(row, col + random, sudoku, rndInt))
-                    // its solved let it cascade
-                    return true;
+                // its solved let it cascade
+                return true;
 
             //well it seemes we didnt solve anything here, better luck next time..., 
             //go up the call chain and see what we can do up there
@@ -186,9 +186,9 @@ namespace SudokuSolver.Logics
 
         public int[][] Solve(int[][] sudoku)
         {
-            
+
             return solveLogical(sudoku);
-        }   
+        }
 
         public int[][] SolveGuessing(int[][] sudoku)
         {
@@ -199,7 +199,7 @@ namespace SudokuSolver.Logics
         public int[][] Create(int[][] sudoku, Random rnd)
         {
             solveRec(0, 0, sudoku, 1);
-            
+
             int rndInt = 0, colSwap;
 
             //insert 1 trough 9 diagonally
@@ -213,8 +213,8 @@ namespace SudokuSolver.Logics
                     for (int k = 0; k < 9; k++)
                     {
                         colSwap = sudoku[k][colIndex];
-                                  sudoku[k][colIndex] = sudoku[k][colRnd];
-                                  sudoku[k][colRnd] = colSwap;
+                        sudoku[k][colIndex] = sudoku[k][colRnd];
+                        sudoku[k][colRnd] = colSwap;
                     }
                 }
             }
@@ -227,9 +227,9 @@ namespace SudokuSolver.Logics
                     int[] rowSwap;
                     int rowIndex = (i * 3) + j;
                     int rowRnd = (i * 3) + rndInt;
-                        rowSwap = sudoku[rowIndex];
-                        sudoku[rowIndex] = sudoku[rowRnd];
-                        sudoku[rowRnd] = rowSwap;
+                    rowSwap = sudoku[rowIndex];
+                    sudoku[rowIndex] = sudoku[rowRnd];
+                    sudoku[rowRnd] = rowSwap;
 
                 }
 
@@ -267,13 +267,13 @@ namespace SudokuSolver.Logics
                 }
             }
 
-            int[] picks = new int[81];
+            //int[] picks = new int[81];
             List<int> indices = new List<int>();
-            for (int i = 0; i < picks.Length; i++)
+            for (int i = 0; i < 81; i++)
             {
                 indices.Add(i);
             }
-            for (int i = indices.Count-1; i > 0; i--)
+            for (int i = indices.Count - 1; i > 0; i--)
             {
                 rndInt = rnd.Next(0, i);
 
@@ -282,44 +282,34 @@ namespace SudokuSolver.Logics
                 indices[rndInt] = swap;
             }
 
-            int[][] sudokuCopy = CopyArrayBuiltIn(sudoku);
-
-            for (int i = 0; i < 3; i++)
+            List<int[]> picks = new List<int[]>();
+            foreach (var item in indices)
             {
+                int row = Convert.ToInt32(Math.Floor(Convert.ToDecimal(item / 9)));
+                int col = item % 9;
+                int[] coord = new int[2] { row, col };
+                bool delete = false;
 
 
-                foreach (var item in indices)
+                picks.Add(coord);
+
+                int cellValue = sudoku[row][col];
+                sudoku[row][col] = 0;
+
+                foreach (var pick in picks)
                 {
-                    if (picks[item] > -1)
+                    if (soleCandidate(pick[0], pick[1], sudoku) == 0)
                     {
-                        int row = Convert.ToInt32(Math.Floor(Convert.ToDecimal(item / 9)));
-                        int col = item % 9;
-                        sudokuCopy[row][col] = 0;
-                        int[][] sudokuCopyCopy = solveLogical(CopyArrayBuiltIn(sudokuCopy));
-                        if (sudokuCopyCopy[row][col] > 0)
-                        {
-                            sudokuCopy[row][col] = 0;
-                            picks[item] = -1;
-                        }
-                        else
-                        {
-                            sudokuCopy[row][col] = sudoku[row][col];
-                            picks[item] = 1;
-                        }
+                        //solve works incremental and not on a cell per cell basis
+                        sudoku[pick[0]][pick[1]] = cellValue;
+                        delete = true;
+                        break;
                     }
                 }
+                if(delete)
+                    picks.RemoveAt(picks.Count - 1);
             }
-            for (int i = 0; i < picks.Length; i++)
-            {
-                int row = Convert.ToInt32(Math.Floor(Convert.ToDecimal(i / 9)));
-                int col = i % 9;
-                sudokuCopy[row][col] = picks[i] == -1 ? 0 : sudokuCopy[row][col];
-            }
-
-
-            //solveRec(0, rnd.Next(0,10), sudoku, 10);
-
-            return sudokuCopy;
+            return sudoku;
         }
     }
 }
