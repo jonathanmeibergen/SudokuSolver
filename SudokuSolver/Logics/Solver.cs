@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO.Pipes;
 using System.Linq;
 using System.Web;
 
@@ -85,7 +86,7 @@ namespace SudokuSolver.Logics
         }
 
 
-        public int[][] solveWithForLoops(int [][] sudoku)
+        public int[][] solveLogical(int [][] sudoku)
         {
             int emptyCells = 0;
             int emptyCellsPrev = -1;
@@ -107,6 +108,21 @@ namespace SudokuSolver.Logics
             }
 
             return sudoku;
+        }
+
+        static int[][] CopyArrayBuiltIn(int[][] source)
+        {
+            var len = source.Length;
+            var dest = new int[len][];
+            for (var x = 0; x < len; x++)
+            {
+                var inner = source[x];
+                var ilen = inner.Length;
+                var newer = new int[ilen];
+                Array.Copy(inner, newer, ilen);
+                dest[x] = newer;
+            }
+            return dest;
         }
 
         public bool solveRec(int row, int col, int[][] sudoku, int rndInt)
@@ -171,7 +187,7 @@ namespace SudokuSolver.Logics
         public int[][] Solve(int[][] sudoku)
         {
             
-            return solveWithForLoops(sudoku);
+            return solveLogical(sudoku);
         }   
 
         public int[][] SolveGuessing(int[][] sudoku)
@@ -251,9 +267,59 @@ namespace SudokuSolver.Logics
                 }
             }
 
+            int[] picks = new int[81];
+            List<int> indices = new List<int>();
+            for (int i = 0; i < picks.Length; i++)
+            {
+                indices.Add(i);
+            }
+            for (int i = indices.Count-1; i > 0; i--)
+            {
+                rndInt = rnd.Next(0, i);
+
+                int swap = indices[i];
+                indices[i] = indices[rndInt];
+                indices[rndInt] = swap;
+            }
+
+            int[][] sudokuCopy = CopyArrayBuiltIn(sudoku);
+
+            for (int i = 0; i < 3; i++)
+            {
+
+
+                foreach (var item in indices)
+                {
+                    if (picks[item] > -1)
+                    {
+                        int row = Convert.ToInt32(Math.Floor(Convert.ToDecimal(item / 9)));
+                        int col = item % 9;
+                        sudokuCopy[row][col] = 0;
+                        int[][] sudokuCopyCopy = solveLogical(CopyArrayBuiltIn(sudokuCopy));
+                        if (sudokuCopyCopy[row][col] > 0)
+                        {
+                            sudokuCopy[row][col] = 0;
+                            picks[item] = -1;
+                        }
+                        else
+                        {
+                            sudokuCopy[row][col] = sudoku[row][col];
+                            picks[item] = 1;
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < picks.Length; i++)
+            {
+                int row = Convert.ToInt32(Math.Floor(Convert.ToDecimal(i / 9)));
+                int col = i % 9;
+                sudokuCopy[row][col] = picks[i] == -1 ? 0 : sudokuCopy[row][col];
+            }
+
+
             //solveRec(0, rnd.Next(0,10), sudoku, 10);
 
-            return sudoku;
+            return sudokuCopy;
         }
     }
 }
