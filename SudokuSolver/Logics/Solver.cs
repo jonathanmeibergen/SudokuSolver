@@ -216,4 +216,4 @@ namespace SudokuSolver.Logics
             return sudoku;
         }
     }
-}
+}wax
