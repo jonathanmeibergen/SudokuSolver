@@ -222,7 +222,7 @@ namespace SudokuSolver.Logics
                     rndInt = rnd.Next(0, j);
                     int colIndex = (i * 3) + j;//last column in current column block
                     int colRnd = (i * 3) + rndInt;//random column pick in current column block
-                    for (int k = 0; k < 9; k++)// shuffle cells of al 9 rows in the same column
+                    for (int k = 0; k < 9; k++)// shuffle the cells in all 9 rows that are in the same column
                     {
                         int colSwap = sudoku[k][colIndex];
                         sudoku[k][colIndex] = sudoku[k][colRnd];
