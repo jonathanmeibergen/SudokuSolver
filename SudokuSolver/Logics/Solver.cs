@@ -1,4 +1,4 @@
-using Microsoft.Ajax.Utilities;
+﻿using Microsoft.Ajax.Utilities;
 using SudokuSolver.Models;
 using System;
 using System.Collections;
@@ -122,7 +122,7 @@ namespace SudokuSolver.Logics
             return dest;
         }
 
-        public bool solveRec(int row, int col, int[][] sudoku, int rndInt)
+        public bool SolveGuessingRecursion(int row, int col, int[][] sudoku, int rndInt)
         {
             //DateTime.Now;
             //Debug.WriteLine(new String('=', (row * 9) + col + 1) + " " + DateTime.Now);
@@ -162,7 +162,7 @@ namespace SudokuSolver.Logics
                     //now lets move on to the next cell and get some work done.
                     //not the random gap addition this allows for generating sudokus
                     //When eventually succesfull please pass on the good news to our ancestor function call
-                    if (solveRec(row, col + random, sudoku, rndInt))
+                    if (SolveGuessingRecursion(row, col + random, sudoku, rndInt))
                         // its solved let it cascade up the call stack
                         return true;
                 }
@@ -173,7 +173,7 @@ namespace SudokuSolver.Logics
             //if the current cell is not empty, please leave it alone, its the part of the 
             //sudoku we are trying to solve, move on to the next cell please!
             //not the random gap addition this allows for generating sudokus
-            else if (solveRec(row, col + random, sudoku, rndInt))
+            else if (SolveGuessingRecursion(row, col + random, sudoku, rndInt))
                 // its solved let it cascade up the call stack
                 return true;
 
@@ -190,26 +190,39 @@ namespace SudokuSolver.Logics
 
         public int[][] SolveGuessing(int[][] sudoku)
         {
-            solveRec(0, 0, sudoku, 1);
+            SolveGuessingRecursion(0, 0, sudoku, 1);
             return sudoku;
         }
 
         public int[][] Create(int[][] sudoku, Random rnd)
         {
             //fill all the cells
-            solveRec(0, 0, sudoku, 1);
+            SolveGuessingRecursion(0, 0, sudoku, 1);
 
             int rndInt = 0;
 
+            //
+            // a column    a block column
+            // ┌─┐         ┌─────┐
+            // ╔═╤═╤═╦═╤═╤═╦═╤═╤═╗ ┐
+            // ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢ │ a block row
+            // ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢ │
+            // ╠═╪═╪═╬═╪═╪═╬═╪═╪═╣ ┘
+            // ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢ ┐ a row
+            // ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢ ┘
+            // ╠═╪═╪═╬═╪═╪═╬═╪═╪═╣
+            // ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢
+            // ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢
+            // ╚═╧═╧═╩═╧═╧═╩═╧═╧═╝ 
             //shuffle columns per block columns
             for (int i = 2; i >= 0; i--)
             {
                 for (int j = 2; j >= 0; j--)
                 {
                     rndInt = rnd.Next(0, j);
-                    int colIndex = (i * 3) + j;
-                    int colRnd = (i * 3) + rndInt;
-                    for (int k = 0; k < 9; k++)
+                    int colIndex = (i * 3) + j;//last column in current column block
+                    int colRnd = (i * 3) + rndInt;//random column pick in current column block
+                    for (int k = 0; k < 9; k++)// shuffle cells of al 9 rows in the same column
                     {
                         int colSwap = sudoku[k][colIndex];
                         sudoku[k][colIndex] = sudoku[k][colRnd];
@@ -253,7 +266,7 @@ namespace SudokuSolver.Logics
 
             }
 
-            //shuffle blockrwos
+            //shuffle blockrows
             for (int i = 2; i >= 0; i--)
             {
                 rndInt = rnd.Next(0, i);
@@ -269,16 +282,16 @@ namespace SudokuSolver.Logics
                 }
             }
 
-
             //create list of int from 1 to 81
+            // 1 2 3 4 5 ... 77 78 79 80 81
             List<int> randomNumbers = new List<int>();
             for (int i = 0; i < 81; i++)
             {
                 randomNumbers.Add(i);
             }
-            //shuffle them and later use them for cell info
+            //shuffle them and later use them for cell coordinates
             //we start wich 81 numbers shuffled and later convert them to indices and
-            //add als the 
+            // 27 56 13 8 ... 42 35 67 2 18
             for (int i = randomNumbers.Count - 1; i > 0; i--)
             {
                 rndInt = rnd.Next(0, i);
@@ -288,7 +301,11 @@ namespace SudokuSolver.Logics
                 randomNumbers[rndInt] = swap;
             }
 
-            //keep track of the cell info
+            //keep track of the cell coordinates we are going to zero in random order
+            // [0]{ 1 , 6 }
+            // [1]{ 4 , 0 }
+            // [2]{ 3 , 2 }
+            // ...
             List<int[]> randomCells = new List<int[]>();
 
             //walk trough all 81 (9*9) (shuffled) numbers to see wich cell can or cant be zeroed
@@ -298,8 +315,7 @@ namespace SudokuSolver.Logics
                 int row = Convert.ToInt32(Math.Floor(Convert.ToDecimal(item / 9)));
                 int col = item % 9;
 
-                //remember the value we might have to put back if it cant be solved removing the cell
-                //from item
+                //remember the (current) value we might have to put back if the sudoku cant be solved 
                 int cellValue = sudoku[row][col];
                 //make current cell zero
                 sudoku[row][col] = 0;
@@ -308,18 +324,19 @@ namespace SudokuSolver.Logics
                 int[] coord = new int[2] { row, col};
                 randomCells.Add(coord);
 
-                //lets give it a try 
+                //lets give the logical solve a it a try 
                 sudoku = solveLogical(sudoku);
 
                 //check for empty cells, since we know wich cells we erased we can
-                //walk through them (in reverse order, since the last ones are usually zero), 
-                //if we have an empty cell, restore current cell and remove it from 
-                //randomCells list, also break from the loop, we know enough
+                //walk through them (in reverse order, since the last cells we tried are usually zero, but not always!!), 
+                //if we have an empty cell, restore current cell and remove it from randomCells list,
+                // also break from the loop, we know enough
                 foreach (var co in randomCells.Reverse<int[]>())
                 {
                     if (sudoku[co[0]][co[1]] == 0)
                     {
                         sudoku[row][col] = cellValue;
+                        //remove the last cell from randomCells since it shouldnt be zero
                         randomCells.RemoveAt(randomCells.Count - 1);
                         break;
                     }
