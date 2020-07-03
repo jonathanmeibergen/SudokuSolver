@@ -84,5 +84,16 @@ namespace SudokuSolver.Controllers
             TempData["sudoku"] = sudokuModel;
             return RedirectToAction("Sudoku");
         }
+
+        /// <summary>
+        /// Creates a randomized guessing sudoku using the empty sudoku.
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult CreateSudokuGuessing(Random rnd)
+        {
+            sudokuModel.Cells = solver.CreateGuessing(SudokuList.ElementAt(2).Cells, rnd);
+            TempData["sudoku"] = sudokuModel;
+            return RedirectToAction("Sudoku");
+        }
     }
 }

@@ -12,7 +12,6 @@ namespace SudokuSolver.Logics
 { 
     public class Solver
     {
-        private int seed = 1;
         private Random rnd = new Random();
 
         public List<int> getBlockNumbers(double rowNumber, double columnNumber, ref List<int> candidates, int[][] sudoku)
@@ -122,12 +121,10 @@ namespace SudokuSolver.Logics
             return dest;
         }
 
-        public bool SolveGuessingRecursion(int row, int col, int[][] sudoku, int rndInt)
+        public bool SolveGuessingRecursion(int row, int col, ref int[][] sudoku)
         {
             //DateTime.Now;
             //Debug.WriteLine(new String('=', (row * 9) + col + 1) + " " + DateTime.Now);
-            //allows for random gaps so we can make sudokus with multiple solutions
-            int random = rnd.Next(1, rndInt);
 
             //walking trough the sudoku from top left to bottom right
             if (col >= 9)
@@ -162,7 +159,7 @@ namespace SudokuSolver.Logics
                     //now lets move on to the next cell and get some work done.
                     //not the random gap addition this allows for generating sudokus
                     //When eventually succesfull please pass on the good news to our ancestor function call
-                    if (SolveGuessingRecursion(row, col + random, sudoku, rndInt))
+                    if (SolveGuessingRecursion(row, col + 1, ref sudoku))
                         // its solved let it cascade up the call stack
                         return true;
                 }
@@ -173,7 +170,7 @@ namespace SudokuSolver.Logics
             //if the current cell is not empty, please leave it alone, its the part of the 
             //sudoku we are trying to solve, move on to the next cell please!
             //not the random gap addition this allows for generating sudokus
-            else if (SolveGuessingRecursion(row, col + random, sudoku, rndInt))
+            else if (SolveGuessingRecursion(row, col + 1, ref sudoku))
                 // its solved let it cascade up the call stack
                 return true;
 
@@ -182,23 +179,12 @@ namespace SudokuSolver.Logics
             return false;
         }
 
-        public int[][] Solve(int[][] sudoku)
-        {
-
-            return solveLogical(sudoku);
-        }
-
-        public int[][] SolveGuessing(int[][] sudoku)
-        {
-            SolveGuessingRecursion(0, 0, sudoku, 1);
-            return sudoku;
-        }
-
-        public int[][] Create(int[][] sudoku, Random rnd)
+        public bool ShuffleSudoku (ref int[][] sudoku)
         {
             //fill all the cells
-            SolveGuessingRecursion(0, 0, sudoku, 1);
+            SolveGuessingRecursion(0, 0, ref sudoku);
 
+            //keep track of random picks
             int rndInt = 0;
 
             //
@@ -282,24 +268,76 @@ namespace SudokuSolver.Logics
                 }
             }
 
+            return true;
+        }
+
+        public List<int> createShuffledSudokuIndices()
+        {
+            //keep track of random picks;
+            int rndInt = 0;
+
             //create list of int from 1 to 81
             // 1 2 3 4 5 ... 77 78 79 80 81
-            List<int> randomNumbers = new List<int>();
+            List<int> randomIndices = new List<int>();
             for (int i = 0; i < 81; i++)
             {
-                randomNumbers.Add(i);
+                randomIndices.Add(i);
             }
             //shuffle them and later use them for cell coordinates
             //we start wich 81 numbers shuffled and later convert them to indices and
             // 27 56 13 8 ... 42 35 67 2 18
-            for (int i = randomNumbers.Count - 1; i > 0; i--)
+            for (int i = randomIndices.Count - 1; i > 0; i--)
             {
                 rndInt = rnd.Next(0, i);
 
-                int swap = randomNumbers[i];
-                randomNumbers[i] = randomNumbers[rndInt];
-                randomNumbers[rndInt] = swap;
+                int swap = randomIndices[i];
+                randomIndices[i] = randomIndices[rndInt];
+                randomIndices[rndInt] = swap;
             }
+
+            return randomIndices;
+        }
+
+        public int[][] Solve(int[][] sudoku)
+        {
+
+            return solveLogical(sudoku);
+        }
+
+        public int[][] SolveGuessing(int[][] sudoku)
+        {
+            SolveGuessingRecursion(0, 0, ref sudoku);
+            return sudoku;
+        }
+
+        public int[][] CreateGuessing(int[][] sudoku, Random rnd)
+        {
+            ShuffleSudoku(ref sudoku);
+
+            //keep track of the cell coordinates we are going to zero in random order
+            // [0]{ 1 , 6 }
+            // [1]{ 4 , 0 }
+            // [2]{ 3 , 2 }
+            // ...
+            List<int> randomIndices = createShuffledSudokuIndices();
+
+            //walk trough all 81 (9*9) (shuffled) numbers to see wich cell can or cant be zeroed
+            for (int i = 0; i < randomIndices.Count - 18; i++)
+            {
+                //cell number to coordinates
+                int row = Convert.ToInt32(Math.Floor(Convert.ToDecimal(randomIndices[i] / 9)));
+                int col = randomIndices[i] % 9;
+
+                sudoku[row][col] = 0;
+            }
+            
+            return sudoku;
+        }
+
+        public int[][] Create(int[][] sudoku, Random rnd)
+        {
+            ShuffleSudoku(ref sudoku);
+            List<int> randomIndices = createShuffledSudokuIndices();
 
             //keep track of the cell coordinates we are going to zero in random order
             // [0]{ 1 , 6 }
@@ -309,7 +347,7 @@ namespace SudokuSolver.Logics
             List<int[]> randomCells = new List<int[]>();
 
             //walk trough all 81 (9*9) (shuffled) numbers to see wich cell can or cant be zeroed
-            foreach (var item in randomNumbers)
+            foreach (var item in randomIndices)
             {
                 //cell number to coordinates
                 int row = Convert.ToInt32(Math.Floor(Convert.ToDecimal(item / 9)));
