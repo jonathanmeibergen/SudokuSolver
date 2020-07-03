@@ -9,8 +9,8 @@
     @using (Html.BeginForm("Solve", "Sudoku"))
     {
         <div class="sudokuSidebar">
-            <label id="solveLabel">@Model.Alert</label>
-            <div class="clearfix"></div>
+            <!--<label id="solveLabel">@Model.Alert</label>
+            <div class="clearfix"></div>-->
             <div class="buttonContainer">
 
                 <button type="submit">Solve Logical</button>
@@ -31,6 +31,7 @@
                 </div>
                 <div class="clearfix"></div>
                 <div class="dropdownlistcontainer">
+                    <p style="margin:auto; align-content:center; text-align:center;">Predifined Sudoku&apos;s</p>
                     @Html.DropDownListFor(model => model.SudokuId, new SelectList(Model.Sudokus, "SudokuId", "Name", Model.SudokuId), null, new { @onchange = "SelectionChanged(this.value)", @onfocus = "console.log('hi')" })
                 </div>
                 <div class="clearfix"></div>
