@@ -14,15 +14,29 @@ namespace SudokuSolver.Logics
     {
         private Random rnd = new Random();
 
+        /// <summary>
+        /// return all candidates in the block containing the current cell
+        /// </summary>
+        /// <param name="row">the row number of the current cell</param>
+        /// <param name="col">the column number of the current cell</param>
+        /// <param name="candidates">list of possibly previously calculated cells</param>
+        /// <param name="sudoku">reference of the sudoku</param>
+        /// <returns>the partially filled list of candidates</returns>
         public List<int> getBlockNumbers(double row, double col, ref List<int> candidates, ref int[][] sudoku)
         {
-            //calculate start coordinates for 
-            double blockStartRow = row - (row % 3);
-            double blockStartColumn = col - (col % 3);
+            // calculate start coordinates for the block of the cell
+            // when row = 5:
+            //          ┌─┐ = row % 3 = 2, so 5 - 2 = 3 and this is the start col index of the block   
+            //  0 1 2 3 4 5   
+            // ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢
+            double blockStartCol = row - (row % 3);
+            // same as the above but for row number
+            double blockStartRow = col - (col % 3);
 
-            for (int r = (int)blockStartRow; r < blockStartRow + 3; r++)
+            // iterate through all block cells from top left postion of the current block
+            for (int r = (int)blockStartCol; r < blockStartCol + 3; r++)
             {
-                for (int c = (int)blockStartColumn; c < blockStartColumn + 3; c++)
+                for (int c = (int)blockStartRow; c < blockStartRow + 3; c++)
                 {
                     candidates.Remove(sudoku[r][c]);
                 }
@@ -31,6 +45,13 @@ namespace SudokuSolver.Logics
             return candidates;
         }
 
+        /// <summary>
+        /// return all candidates in the row containing the current cell
+        /// </summary>
+        /// <param name="row">the row number of the current cell</param>
+        /// <param name="candidates">list of possibly previously calculated cells</param>
+        /// <param name="sudoku">reference of the sudoku</param>
+        /// <returns>the partially filled list of candidates</returns>
         public List<int> getRowNumbers(int row, ref List<int> candidates, ref int[][] sudoku)
         {
             for (int i = 0; i < 9; i++)
@@ -41,6 +62,13 @@ namespace SudokuSolver.Logics
             return candidates;
         }
 
+        /// <summary>
+        /// return all candidates in the column containing the current cell
+        /// </summary>
+        /// <param name="col">the column number of the current cell</param>
+        /// <param name="candidates">list of possibly previously calculated cells</param>
+        /// <param name="sudoku">reference of the sudoku</param>
+        /// <returns>the partially filled list of candidates</returns>
         public List<int> getColumnNumbers(int col, ref List<int> candidates, ref int[][] sudoku)
         {
             for (int i = 0; i < 9; i++)
@@ -51,6 +79,13 @@ namespace SudokuSolver.Logics
             return candidates;
         }
 
+        /// <summary>
+        /// get all the candidates for the row, column and block containing the current cell
+        /// </summary>
+        /// <param name="row">the row number of the current cell</param>
+        /// <param name="col">the column number of the current cell</param>
+        /// <param name="sudoku">reference of the sudoku</param>
+        /// <returns>the complete list of candidates</returns>
         public List<int> getAllCandidates(int row, int col, ref int[][] sudoku)
         {
             List<int> candidates = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -61,6 +96,13 @@ namespace SudokuSolver.Logics
             return candidates;
         }
 
+        /// <summary>
+        /// Returns the sole candidate if there is only one
+        /// </summary>
+        /// <param name="row">the row number of the current cell</param>
+        /// <param name="col">the column number of the current cell</param>
+        /// <param name="sudoku">reference of the sudoku</param>
+        /// <returns>the sole candidate value</returns>
         public int soleCandidate(int row, int col, ref int[][] sudoku)
         {
             //get all candidates for the current cell
@@ -74,7 +116,11 @@ namespace SudokuSolver.Logics
             return 0;
         }
 
-
+        /// <summary>
+        /// The method that solves the sudoku logically
+        /// </summary>
+        /// <param name="sudoku">reference of the sudoku</param>
+        /// <returns>the solved sudoku</returns>
         public int[][] solveLogical(ref int[][] sudoku)
         {
             //check if there are cells solved and keep track of this using two variables
@@ -128,6 +174,13 @@ namespace SudokuSolver.Logics
             return dest;
         }
 
+        /// <summary>
+        /// Recursive function based on guessing numbers picked from possible candidates
+        /// </summary>
+        /// <param name="row">the row number of the current cell</param>
+        /// <param name="col">the column number of the current cell</param>
+        /// <param name="sudoku">reference of the sudoku</param>
+        /// <returns>false if the the call couldnt guess the right number. True if it can or the cell is already filled</returns>
         public bool SolveGuessingRecursion(int row, int col, ref int[][] sudoku)
         {
             //DateTime.Now;
@@ -186,6 +239,12 @@ namespace SudokuSolver.Logics
             return false;
         }
 
+        /// <summary>
+        /// Fills in an empty sudoku and then shuffles the rows and columns per block and also 
+        /// the block rows and columns themselves
+        /// </summary>
+        /// <param name="sudoku">the sudoku as reference</param>
+        /// <returns>boolean succes</returns>
         public bool ShuffleSudoku (ref int[][] sudoku)
         {
             //fill all the cells
@@ -194,19 +253,20 @@ namespace SudokuSolver.Logics
             //keep track of random picks
             int rndInt = 0;
 
-            //
-            // a column    a block column
-            // ┌─┐         ┌─────┐
-            // ╔═╤═╤═╦═╤═╤═╦═╤═╤═╗ ┐
-            // ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢ │ a block row
-            // ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢ │
-            // ╠═╪═╪═╬═╪═╪═╬═╪═╪═╣ ┘
-            // ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢ ┐ a row
-            // ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢ ┘
-            // ╠═╪═╪═╬═╪═╪═╬═╪═╪═╣
-            // ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢
-            // ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢
-            // ╚═╧═╧═╩═╧═╧═╩═╧═╧═╝ 
+            /// <example>
+            /// a column    a block column
+            /// ┌─┐         ┌─────┐
+            /// ╔═╤═╤═╦═╤═╤═╦═╤═╤═╗ ┐
+            /// ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢ │ a block row
+            /// ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢ │
+            /// ╠═╪═╪═╬═╪═╪═╬═╪═╪═╣ ┘
+            /// ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢ ┐ a row
+            /// ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢ ┘
+            /// ╠═╪═╪═╬═╪═╪═╬═╪═╪═╣
+            /// ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢
+            /// ╟─┼─┼─╫─┼─┼─╫─┼─┼─╢
+            /// ╚═╧═╧═╩═╧═╧═╩═╧═╧═╝
+            /// </example>
             //shuffle columns per block columns
             for (int i = 2; i >= 0; i--)
             {
@@ -278,6 +338,10 @@ namespace SudokuSolver.Logics
             return true;
         }
 
+        /// <summary>
+        /// A list of shuffled indices later to be used for random deletion of cell values
+        /// </summary>
+        /// <returns>the shuffled list of random indices</returns>
         public List<int> createShuffledSudokuIndices()
         {
             //keep track of random picks;
@@ -323,11 +387,16 @@ namespace SudokuSolver.Logics
             return sudoku;
         }
 
+        // note the parameter with random object reference, this allows for different random numbers
+        // through the entire program. The Random object is initialized in the view Sudoku.cshtml
         public int[][] CreateGuessing(int[][] sudoku, Random rnd)
         {
             ShuffleSudoku(ref sudoku);
 
-            //keep track of the cell coordinates we are going to zero in random order
+            // the amount cells we want to keep
+            int remainingCells = 13;
+
+            // keep track of the cell coordinates we are going to zero in random order
             // [0]{ 1 , 6 }
             // [1]{ 4 , 0 }
             // [2]{ 3 , 2 }
@@ -335,7 +404,7 @@ namespace SudokuSolver.Logics
             List<int> randomIndices = createShuffledSudokuIndices();
 
             //walk trough all 81 (9*9) (shuffled) numbers to see wich cell can or cant be zeroed
-            for (int i = 0; i < randomIndices.Count - 18; i++)
+            for (int i = 0; i < randomIndices.Count - remainingCells; i++)
             {
                 //cell number to coordinates
                 int row = Convert.ToInt32(Math.Floor(Convert.ToDecimal(randomIndices[i] / 9)));
@@ -347,6 +416,8 @@ namespace SudokuSolver.Logics
             return sudoku;
         }
 
+        // note the parameter with random object reference, this allows for different random numbers
+        // through the entire program. The Random object is initialized in the view Sudoku.cshtml
         public int[][] Create(int[][] sudoku, Random rnd)
         {
             ShuffleSudoku(ref sudoku);
