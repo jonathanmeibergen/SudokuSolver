@@ -211,8 +211,6 @@ namespace SudokuSolver.Logics
                 //if there are candidates, walk through them in a linear fashion
                 foreach (var guess in candidates)
                 {
-                    //if (1 == random)
-                    //    continue;
                     //lets try out a guess from candidates
                     sudoku[row][col] = guess;
 
