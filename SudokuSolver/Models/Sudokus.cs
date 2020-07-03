@@ -13,7 +13,7 @@ namespace SudokuSolver.Models
                 {
                 new Sudoku
                 {
-                    SudokuId = 0,
+                    SudokuId = 5,
                     Name = "Logical",
                     Cells = new int[][]
                     {
@@ -94,6 +94,30 @@ namespace SudokuSolver.Models
                         new int[9] {4,0,0,0,6,0,0,0,8 },
                         new int[9] {0,8,0,7,0,4,0,5,0 },
                         new int[9] {0,0,6,0,8,0,1,0,0 }
+                    }
+                },
+                new Sudoku
+                {
+                    SudokuId = 0,
+                    Name = "16",
+                    Cells = new int[][]
+                    {
+                        new int[16],
+                        new int[16],
+                        new int[16],
+                        new int[16],
+                        new int[16],
+                        new int[16],
+                        new int[16],
+                        new int[16],
+                        new int[16],
+                        new int[16],
+                        new int[16],
+                        new int[16],
+                        new int[16],
+                        new int[16],
+                        new int[16],
+                        new int[16],
                     }
                 }
             };
