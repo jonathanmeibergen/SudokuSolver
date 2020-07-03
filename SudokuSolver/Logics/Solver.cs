@@ -322,4 +322,4 @@ namespace SudokuSolver.Logics
             return sudokuCopy;
         }
     }
-}wax
+}
